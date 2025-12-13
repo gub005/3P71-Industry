@@ -28,8 +28,6 @@ parser.add_argument('--thresh', help='Minimum confidence threshold for displayin
 parser.add_argument('--resolution', help='Resolution in WxH to display inference results at (example: "640x480"), \
                     otherwise, match source resolution',
                     default=None)
-parser.add_argument('--record', help='Record results from video or webcam and save it as "demo1.avi". Must specify --resolution argument to record.',
-                    action='store_true')
 
 args = parser.parse_args()
 
@@ -39,7 +37,6 @@ model_path = args.model
 img_source = args.source
 min_thresh = args.thresh
 user_res = args.resolution
-record = args.record
 
 # Check if model file exists and is valid
 if (not os.path.exists(model_path)):
@@ -103,8 +100,6 @@ while True:
         img_count = img_count + 1
 
     # Resize frame to desired display resolution
-    if resize == True:
-        frame = cv2.resize(frame,(resW,resH))
 
     # Run inference on frame
     results = model(frame, verbose=False)
