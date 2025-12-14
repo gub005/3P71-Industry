@@ -1,0 +1,38 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    { "id": "Cockburn & Beckwith", "lat": 44.896900, "lon": -76.241108 },
+    { "id": "Cockburn & Drummond", "lat": 44.896063, "lon": -76.242459 },
+    { "id": "Cockburn & Gore", "lat": 44.895217, "lon": -76.243863 },
+    { "id": "Gore & Brock", "lat": 44.896222, "lon": -76.245082 },
+    { "id": "Drummond & Brock", "lat": 44.897062, "lon": -76.243646 },
+    { "id": "Beckwith & Brock", "lat": 44.897895, "lon": -76.242256 },
+    { "id": "Beckwith & Craig", "lat": 44.898848, "lon": -76.243445 },
+    { "id": "Drummond & Craig", "lat": 44.898034, "lon": -76.244836 },
+    { "id": "Gore & Craig", "lat": 44.897204, "lon": -76.246243 },
+    { "id": "Gore & Harvey", "lat": 44.898169, "lon": -76.247429 },
+    { "id": "Drummond & Harvey", "lat": 44.899027, "lon": -76.246000 },
+    { "id": "Beckwith & Harvey", "lat": 44.899826, "lon": -76.244636 }
+  ],
+  "edges": [
+    { "source": "Cockburn & Beckwith", "target": "Cockburn & Drummond", "distance": 141.37, "safety": 0.1, "images": [] },
+    { "source": "Cockburn & Beckwith", "target": "Beckwith & Brock", "distance": 142.89, "safety": 0.1, "images": ["test_images/road1.jpg"] },
+    { "source": "Cockburn & Drummond", "target": "Cockburn & Gore", "distance": 145.19, "safety": 0.1, "images": [] },
+    { "source": "Cockburn & Drummond", "target": "Drummond & Brock", "distance": 145.19, "safety": 0.1, "images": [] },
+    { "source": "Cockburn & Gore", "target": "Gore & Brock", "distance": 147.34, "safety": 0.1, "images": [] },
+    { "source": "Gore & Brock", "target": "Gore & Craig", "distance": 142.43, "safety": 0.1, "images": [] },
+    { "source": "Gore & Brock", "target": "Drummond & Brock", "distance": 146.69, "safety": 0.1, "images": [] },
+    { "source": "Drummond & Brock", "target": "Drummond & Craig", "distance": 143.06, "safety": 0.1, "images": [] },
+    { "source": "Drummond & Brock", "target": "Beckwith & Brock", "distance": 143.41, "safety": 0.1, "images": [] },
+    { "source": "Beckwith & Brock", "target": "Beckwith & Craig", "distance": 141.42, "safety": 0.1, "images": [] },
+    { "source": "Beckwith & Craig", "target": "Beckwith & Harvey", "distance": 143.62, "safety": 0.1, "images": [] },
+    { "source": "Beckwith & Craig", "target": "Drummond & Craig", "distance": 142.12, "safety": 0.1, "images": [] },
+    { "source": "Drummond & Craig", "target": "Drummond & Harvey", "distance": 143.52, "safety": 0.1, "images": [] },
+    { "source": "Drummond & Craig", "target": "Gore & Craig", "distance": 144.22, "safety": 0.1, "images": [] },
+    { "source": "Gore & Craig", "target": "Gore & Harvey", "distance": 142.27, "safety": 0.1, "images": [] },
+    { "source": "Gore & Harvey", "target": "Drummond & Harvey", "distance": 147.55, "safety": 0.1, "images": [] },
+    { "source": "Drummond & Harvey", "target": "Beckwith & Harvey", "distance": 139.41, "safety": 0.1, "images": [] }
+  ]
+}

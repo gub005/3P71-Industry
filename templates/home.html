@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart City Safe Routing</title>
+</head>
+<body>
+    <h1>Smart City Safe Routing</h1>
+
+    <form method="POST">
+        <label for="start">Start Intersection:</label>
+        <select name="start" id="start">
+            {% for node in nodes %}
+                <option value="{{ node }}">{{ node }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="end">End Intersection:</label>
+        <select name="end" id="end">
+            {% for node in nodes %}
+                <option value="{{ node }}">{{ node }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Compute Route</button>
+    </form>
+
+    {% if path %}
+        <h2>Route:</h2>
+        <p>{{ path }}</p>
+
+        <h2>Map:</h2>
+        <iframe src="{{ url_for('static', filename='route_map.html') }}" width="800" height="600"></iframe>
+    {% endif %}
+</body>
+</html>
