@@ -98,8 +98,10 @@
             "source": "Cockburn & Gore",
             "target": "Gore & Brock",
             "distance": 147.34,
-            "safety": 0.1,
-            "images": []
+            "safety": 0.25,
+            "images": [
+                "uploads/toronto_5102297373219922_-79.393883_43.645476.jpg"
+            ]
         },
         {
             "source": "Gore & Brock",

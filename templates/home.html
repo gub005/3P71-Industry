@@ -2,6 +2,9 @@
 <html>
 <head>
     <title>Smart City Safe Routing</title>
+    <style>
+        .route-buttons button[aria-pressed="true"] {font-weight: 700;}
+    </style>
 </head>
 <body>
     <h1>Smart City Safe Routing</h1>
@@ -25,7 +28,7 @@
     </form>
 
     <h2>Update Road Image</h2>
-    <div style:="background-color: #f8d7da; padding: 15px; border-radius: 5px">
+    <div style="background-color: #f8d7da; padding: 15px; border-radius: 5px">
         <form action="/upload_evidence" method="POST" enctype="multipart/form-data">
             <label for="edge_select"> Select Road Segment:</label>
             <select name="edge_select" id="edge_select" required>
@@ -46,18 +49,27 @@
     </div>
 
     <span>
-    {% if path %}
-    
-        <h2>Route:</h2>
-        <p>{{ path }}</p>
+    {% if shortest_path or combined_path or safest_path %}
+        <hr>
+
+        <div class="route-buttons" style="margin:12px 0;">
+            <button type="button" id="btn-shortest" aria-pressed="true" onclick="showRoute('shortest')">Shortest</button>
+            <button type="button" id="btn-safest" aria-pressed="false" onclick="showRoute('safest')">Safest</button>
+            <button type="button" id="btn-combined" aria-pressed="false" onclick="showRoute('combined')">Combined</button>
+        </div>
+
+    <!-- SHORTest -->
+    <section id="route-shortest" class="route-panel">
+        <h2>Route (Shortest Distance)</h2>
+        <p>{{ shortest_path }}</p>
 
         <h2>Map:</h2>
-        <iframe src="{{ url_for('static', filename='route_map.html') }}" width="800" height="600"></iframe>
+        <iframe src="{{ url_for('static', filename='shortestroute_map.html') }}" width="800" height="600"></iframe>
 
         <h2>Vision Along This Route</h2>
 
-        {% for e in route_edges %}
-            <div style: ="margin:16px 0; padding: 12px; border: 1px solid #ccc;">
+        {% for e in shortest_dtls %}
+            <div style="margin:16px 0; padding: 12px; border: 1px solid #ccc;">
                 <strong>{{ e.label }}</strong>
                 {% if e.safety is not none %}
                     <span> - Safety: {{"%.2f"|format(e.safety)}} </span>
@@ -74,7 +86,103 @@
                 {% endif %}
             </div>
         {% endfor %}
+    </section>
+
+    <!-- SAFEest -->
+    <section id="route-safest" class="route-panel">
+        <h2>Route (Safest)</h2>
+        <p>{{ safest_path }}</p>
+
+        <h2>Map</h2>
+        <iframe src="{{ url_for('static', filename='safestroute_map.html') }}" width="800" height="600"></iframe>
+
+        <h2>Vision Along This Route</h2>
+
+        {% for e in safest_dtls %}
+            <div style="margin:16px 0; padding: 12px; border:1px solid #ccc">
+            <strong>{{e.label}}</strong>
+            {% if e.safety is not none %}
+                <span> - Safety: {{ "%.2f"|format(e.safety)}}</span>
+            {% endif %}
+
+            {% if e.image_urls and e.image_urls|length > 0 %}
+                <div style="margin-top: 10px;">
+                    {% for img in e.image_urls %}
+                        <img src="{{img}}" style="max-width: 400px; margin: 6px; border-radius: 3px;">
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="margin-top: 10px;"><em> No images uploaded for this edge</em></p>
+            {% endif %}
+            </div>
+        {% endfor %}
+    </section>
+
+    <!-- Combined route-->
+    <section id="route-combined" class="route-panel">
+        <h2>Route (Combined)</h2>
+        <p>{{ combined_route }}</p>
+
+        <h2>Map</h2>
+        <iframe src="{{ url_for('static', filename='combinedroute_map.html') }}" width="800" height="600"></iframe>
+
+        <h2>Vision Along this Route</h2>
+
+        {% for e in combined_dtls %}
+            <div style="margin:16px 0; padding: 12px; border: 1px solid #ccc">
+            <strong>{{e.label}}</strong>
+            {% if e.safety is not none %}
+                <span> - Safety: {{"%.2f"|format(e.safety) }}</span>
+            {% endif %}
+
+            {% if e.image_urls and e.image_urls|length > 0 %}
+                <div style="margin-top: 10px;">
+                    {% for img in e.img_urls %}
+                        <img src="{{img}}" style="max-width: 400px; margin: 6px; border-radius: 3px;">
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="margin-top: 10px;"><em> No images uploaded for this edge </em></p>
+            {% endif %}
+            </div>
+        {% endfor %}
+    </section>
+
     {% endif %}
     </span>
+
+<script>
+    function ensureIframeLoaded(panel){
+        const iframe = panel.querySelector("iframe");
+        if(!iframe) return;
+        if(!iframe.getAttribute("src")) {
+            iframe.setAttribute("src", iframe.getAttribute("data-src"))
+        }
+    }
+
+    function showRoute(which){
+        const panels= {
+            shortest: document.getElementById("route-shortest"),
+            safest: document.getElementById("route-safest"),
+            combined: document.getElementById("route-combined"),
+        };
+    
+    //hide all panels (maps and route details)
+    Object.values(panels).forEach(p => p.hidden = true);
+
+    //show selected route and details
+    panels[which].hidden = false;
+    ensureIframeLoaded(panels[which]);
+
+    //button pressed state
+    ["shortest", "safest", "combined"].forEach(k => {
+        document.getElementById("btn-" + k).setAttribute("aria-pressed", k === which? "true" : false);
+    })
+    }
+
+    document.addEventListener("DOMContentLoaded", () => showRoute("shortest"));
+</script>
+
+
 </body>
 </html>

@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for
 from load_graph import load_graph
-from routing import shortest_distance, safest_route
+from routing import shortest_distance, safest_route, combined_route
 import folium
 from graph_utils import safety_color
 from yolo_inference import analyze_image
 import json
 import os
 from werkzeug.utils import secure_filename
+from generate_map import generate_map
 
 
 
@@ -18,64 +19,42 @@ app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    path = None
-    nodes = list(G.nodes)
     edges_list = list(G.edges)
-    route_edges = []
+    shortest_path = None
+    safest_path = None
+    combined_path = None
+    shortest_dtls = []
+    safest_dtls = []
+    combined_dtls = []
 
     if request.method == "POST":
         start = request.form.get("start")
         end = request.form.get("end")
 
         # compute shortest path
-        path = shortest_distance(G, start, end)
+        shortest_path = shortest_distance(G, start, end)
+        safest_path = safest_route(G, start, end)
+        combined_path = combined_route(G, start, end)
 
-        # generate Folium map (centred on first node)
-        lat, lon = G.nodes[path[0]]["lat"], G.nodes[path[0]]["lon"]
-        m = folium.Map(location=[lat, lon], zoom_start=16)
+        #generate folium maps and save in static/ 
+        generate_map(shortest_path, 0)
+        generate_map(safest_path, 1)
+        generate_map(combined_path, 2)
 
-        # draw the route
-        for u, v in zip(path[:-1], path[1:]):
-            edge_data = G.edges[u, v]
-            color = safety_color(edge_data.get("safety", 0.1))
+        #generate route details for each route
+        shortest_dtls = route_edges(shortest_path)
+        safest_dtls = route_edges(safest_path)
+        combined_dtls = route_edges(combined_path)
 
-            folium.PolyLine(
-                [[G.nodes[u]["lat"], G.nodes[u]["lon"]],
-                 [G.nodes[v]["lat"], G.nodes[v]["lon"]]],
-                color=color, weight=5, opacity=0.8
-            ).add_to(m)
-
-            # Build data for the template
-            imgs = edge_data.get("images", [])
-            if not isinstance(imgs, list):
-                imgs = [imgs]
-
-            route_edges.append({
-                "u": u,
-                "v": v,
-                "label": f"{u} → {v}",
-                "safety": edge_data.get("safety"),
-                "image_urls": [url_for("static", filename=p) for p in imgs],
-            })
-
-        # Add start marker
-        folium.Marker(
-            location=[G.nodes[path[0]]["lat"], G.nodes[path[0]]["lon"]],
-            popup="Start",
-            icon=folium.Icon(color="green")
-        ).add_to(m)
-
-        # add end location marker
-        folium.Marker(
-            location=[G.nodes[path[-1]]["lat"], G.nodes[path[-1]]["lon"]],
-            popup="End",
-            icon=folium.Icon(color="red")
-        ).add_to(m)
-
-        # save our map to static folder for display
-        m.save("static/route_map.html")
-
-    return render_template("home.html", nodes=list(G.nodes), edges_list=edges_list, path=path, route_edges=route_edges)
+    return render_template("home.html", 
+                           nodes=list(G.nodes), 
+                           edges_list=edges_list, 
+                           shortest_path=shortest_path, 
+                           safest_path=safest_path, 
+                           combined_path=combined_path, 
+                           shortest_dtls=shortest_dtls, 
+                           safest_dtls=safest_dtls, 
+                           combined_dtls=combined_dtls,)
 
 
 # Helper method to make changes to the NetworkX graph persistent after image uploading
@@ -151,6 +130,30 @@ def upload_evidence():
         save_graph_to_json(G)
 
     return redirect(url_for("home"))
+
+
+
+def route_edges(path):
+    edge_info = []
+
+    for u, v in zip(path[:-1], path[1:]):
+            edge_data = G.edges[u, v]
+
+            # Build data for the template
+            imgs = edge_data.get("images", [])
+            if not isinstance(imgs, list):
+                imgs = [imgs]
+
+            edge_info.append({
+                "u": u,
+                "v": v,
+                "label": f"{u} → {v}",
+                "safety": edge_data.get("safety"),
+                "image_urls": [url_for("static", filename=p) for p in imgs],
+            })
+
+    return edge_info
+
 
 if __name__ == "__main__":
     app.run(debug=True)
