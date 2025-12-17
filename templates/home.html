@@ -24,12 +24,57 @@
         <button type="submit">Compute Route</button>
     </form>
 
+    <h2>Update Road Image</h2>
+    <div style:="background-color: #f8d7da; padding: 15px; border-radius: 5px">
+        <form action="/upload_evidence" method="POST" enctype="multipart/form-data">
+            <label for="edge_select"> Select Road Segment:</label>
+            <select name="edge_select" id="edge_select" required>
+                {% for u, v in edges_list %}
+                    <option value="{{ u }}|{{ v }}">{{ u }} &rarr; {{ v }}</option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <label for="evidence">Upload Image:</label>
+            <input type="file" name="evidence" accept="image/*" required>
+
+            <br><br>
+
+            <button type="submit">Upload and analyze image</button>
+        </form>
+    </div>
+
+    <span>
     {% if path %}
+    
         <h2>Route:</h2>
         <p>{{ path }}</p>
 
         <h2>Map:</h2>
         <iframe src="{{ url_for('static', filename='route_map.html') }}" width="800" height="600"></iframe>
+
+        <h2>Vision Along This Route</h2>
+
+        {% for e in route_edges %}
+            <div style: ="margin:16px 0; padding: 12px; border: 1px solid #ccc;">
+                <strong>{{ e.label }}</strong>
+                {% if e.safety is not none %}
+                    <span> - Safety: {{"%.2f"|format(e.safety)}} </span>
+                {% endif %}
+                
+                {% if e.image_urls and e.image_urls|length > 0 %}
+                    <div style="margin-top: 10px;">
+                        {% for img in e.image_urls %}
+                                <img src="{{img}}" style="max-width: 400px; margin: 6px; border-radius: 3px;">
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p style="margin-top: 10px;"><em>No images uploaded for this edge.</em></p>
+                {% endif %}
+            </div>
+        {% endfor %}
     {% endif %}
+    </span>
 </body>
 </html>

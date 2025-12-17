@@ -16,7 +16,7 @@ def analyze_image(image_path, conf_thresh=0.4):
     """
     Runs YOLO on an image and returns a safety score
     """
-    results = model(image_path, verbose=False)
+    results = model(image_path, verbose=False, device='cpu')
     detections = results[0].boxes
 
     hazard_score = 0.0
@@ -35,5 +35,7 @@ def analyze_image(image_path, conf_thresh=0.4):
     hazard_score = min(hazard_score, 1.0)
 
     return {
-        "score": hazard_score
+        "score": hazard_score,
+        "hazard_detected": True if hazard_score > 0.0 else False
     }
+

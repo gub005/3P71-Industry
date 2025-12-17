@@ -47,7 +47,7 @@ if (not os.path.exists(model_path)):
 model = YOLO(model_path, task='detect')
 labels = model.names
 
-# Parse input to determine if image source is a file, folder, video, or USB camera
+# Parse input to determine if image source is a file, folder
 img_ext_list = ['.jpg','.JPG','.jpeg','.JPEG','.png','.PNG','.bmp','.BMP']
 
 if os.path.isdir(img_source):
@@ -75,14 +75,11 @@ elif source_type == 'folder':
         if file_ext in img_ext_list:
             imgs_list.append(file)
 
-# Set bounding box colors (using the Tableu 10 color scheme)
+# Set bounding box colors 
 bbox_colors = [(164,120,87), (68,148,228), (93,97,209), (178,182,133), (88,159,106), 
               (96,202,231), (159,124,168), (169,162,241), (98,118,150), (172,176,184)]
 
 # Initialize control and status variables
-avg_frame_rate = 0
-frame_rate_buffer = []
-fps_avg_len = 200
 img_count = 0
 
 # Begin inference loop
@@ -99,10 +96,8 @@ while True:
         frame = cv2.imread(img_filename)
         img_count = img_count + 1
 
-    # Resize frame to desired display resolution
-
     # Run inference on frame
-    results = model(frame, verbose=False)
+    results = model(frame, verbose=False, device='cpu')
 
     # Extract results
     detections = results[0].boxes
