@@ -8,8 +8,12 @@ import json
 import os
 from werkzeug.utils import secure_filename
 from generate_map import generate_map
+from hazard_map import hazard_map
+import cv2
 
 
+bbox_colors = [(164,120,87), (68,148,228), (93,97,209), (178,182,133), (88,159,106), 
+              (96,202,231), (159,124,168), (169,162,241), (98,118,150), (172,176,184)]
 
 
 app = Flask(__name__)
@@ -27,6 +31,8 @@ def home():
     safest_dtls = []
     combined_dtls = []
 
+    hazard_map()
+
     if request.method == "POST":
         start = request.form.get("start")
         end = request.form.get("end")
@@ -40,6 +46,7 @@ def home():
         generate_map(shortest_path, 0)
         generate_map(safest_path, 1)
         generate_map(combined_path, 2)
+        hazard_map()
 
         #generate route details for each route
         shortest_dtls = route_edges(shortest_path)
@@ -103,9 +110,34 @@ def upload_evidence():
 
         is_hazard = inf_results["hazard_detected"]
         risk_score = inf_results["score"]
+        bbox = inf_results["bbox"]
         print(f"{risk_score}")
 
-        # 4. Update the Graph (In-Memory)
+        # 4. Draw bounding boxes on the processed image
+        img = cv2.imread(save_path) 
+        if img is None:
+            raise FileNotFoundError(f"cv2 could not read {save_path}")
+        
+        for box in bbox:
+            color = bbox_colors[box["labelid"] % 10]
+            x1, y1, x2, y2 = box["xyxy"] #extract the xy coords of the object detected
+
+            #draw the rectangle on the image
+            cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+
+            #draw the label and confidence score on the image
+            label = f'{box["label"]}: {int(box["confidence"]*100)}%' #concatenate class label and confidence score
+            labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1) # Get font size
+            label_ymin = max(y1, labelSize[1]-10) #ensure the label does not clip off the image (top of frame)
+            cv2.rectangle(img, (x1, label_ymin-labelSize[1]-10), (x1+labelSize[0], label_ymin+baseLine-10), color, cv2.FILLED) #Draw box to put labelText in
+            cv2.putText(img, label, (x1, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1) #Draw label text
+
+        #replace the image without boxes with the marked up image
+        ok = cv2.imwrite(save_path, img)
+        if not ok:
+            raise RuntimeError(f"cv2.imwrite failed for: {save_path}")
+            
+        # 5. Update the Graph (In-Memory)
 
         # Initialize 'images' list if it doesn't exist for this edge
         if "images" not in G[u][v]:
@@ -114,25 +146,18 @@ def upload_evidence():
         # Store image filename
         G[u][v]["images"] = [f"uploads/{filename}"]
 
-        # Update Safety Score based on YOLO
-        if is_hazard:
-            # If hazard found, INCREASE risk / DECREASE safety
-            # Assuming 'safety' attribute: 0.1 (Safe) -> 0.9 (Dangerous)
-            current_safety = G[u][v].get("safety", 0.1)
-            G[u][v]["safety"] = max(current_safety, risk_score)
+        # Update Safety Score based on YOLO            
+        G[u][v]["safety"] = risk_score
 
-            print(
-                f"Hazard detected on edge {u}->{v}. "
-                f"New Safety Score: {G[u][v]['safety']}"
-            )
-
-        # 5. Persist Changes to JSON
+        # 6. Persist Changes to JSON
         save_graph_to_json(G)
+
+        hazard_map() #update overall graph to reflect 
 
     return redirect(url_for("home"))
 
 
-
+#Populate the HTML template with available edges to upload images to
 def route_edges(path):
     edge_info = []
 

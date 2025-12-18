@@ -68,16 +68,16 @@
             "distance": 141.37,
             "safety": 0.1,
             "images": [
-                "uploads/construction_augmented_toronto_131066909068843_-79.394494_43.644389.png"
+                "uploads/2964265693808609_-76.243438_44.890748.jpg"
             ]
         },
         {
             "source": "Cockburn & Beckwith",
             "target": "Beckwith & Brock",
             "distance": 142.89,
-            "safety": 0.1,
+            "safety": 0.0,
             "images": [
-                "uploads/test_images/road1.jpg"
+                "uploads/2969246000007489_-76.239769_44.897878.jpg"
             ]
         },
         {
@@ -85,22 +85,26 @@
             "target": "Cockburn & Gore",
             "distance": 145.19,
             "safety": 0.1,
-            "images": []
+            "images": [
+                "uploads/augmented_2953874128235170_-76.244693_44.893724.png"
+            ]
         },
         {
             "source": "Cockburn & Drummond",
             "target": "Drummond & Brock",
             "distance": 145.19,
             "safety": 0.1,
-            "images": []
+            "images": [
+                "uploads/augmented_2951240591788778_-76.239683_44.893827.png"
+            ]
         },
         {
             "source": "Cockburn & Gore",
             "target": "Gore & Brock",
             "distance": 147.34,
-            "safety": 0.25,
+            "safety": 0.5,
             "images": [
-                "uploads/toronto_5102297373219922_-79.393883_43.645476.jpg"
+                "uploads/augmented_2940054269651913_-76.240128_44.893481.png"
             ]
         },
         {
@@ -118,7 +122,7 @@
             "distance": 146.69,
             "safety": 0.1,
             "images": [
-                "uploads/toronto_4403100503036013_-79.370339_43.658484.jpg"
+                "uploads/2950109055224156_-76.242086_44.891904.jpg"
             ]
         },
         {
@@ -127,7 +131,7 @@
             "distance": 143.06,
             "safety": 1.0,
             "images": [
-                "uploads/construction_augmented_toronto_131066909068843_-79.394494_43.644389.png"
+                "uploads/debris_augmented_toronto_142270181201612_-79.395103_43.645446.png"
             ]
         },
         {
@@ -142,7 +146,9 @@
             "target": "Beckwith & Craig",
             "distance": 141.42,
             "safety": 0.1,
-            "images": []
+            "images": [
+                "uploads/debris_augmented_toronto_142270181201612_-79.395103_43.645446.png"
+            ]
         },
         {
             "source": "Beckwith & Craig",
@@ -163,7 +169,9 @@
             "target": "Drummond & Harvey",
             "distance": 143.52,
             "safety": 0.1,
-            "images": []
+            "images": [
+                "uploads/augmented_2941618069422371_-76.242698_44.891360.png"
+            ]
         },
         {
             "source": "Drummond & Craig",
@@ -185,15 +193,19 @@
             "source": "Gore & Harvey",
             "target": "Drummond & Harvey",
             "distance": 147.55,
-            "safety": 0.1,
-            "images": []
+            "safety": 1.0,
+            "images": [
+                "uploads/augmented_2949056362007701_-76.243213_44.894864.png"
+            ]
         },
         {
             "source": "Drummond & Harvey",
             "target": "Beckwith & Harvey",
             "distance": 139.41,
             "safety": 0.1,
-            "images": []
+            "images": [
+                "uploads/2955853914697995_-76.239415_44.894127.jpg"
+            ]
         }
     ]
 }
