@@ -1,3 +1,13 @@
+# Course: COSC 3P71
+
+# Author 1
+# Name: Alexandere Brillon
+# Sdt. no: 
+
+# Author 2
+# Name:
+# Sdt. no:
+
 import json
 import math
 

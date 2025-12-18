@@ -1,3 +1,13 @@
+# Course: COSC 3P71
+
+# Author 1
+# Name: Hansel Janzen
+# Sdt. no: 7954639
+
+# Author 2
+# Name: David Shamess
+# Sdt. no: 
+
 from ultralytics import YOLO
 
 # Load model ONCE (important for performance)
@@ -7,28 +17,32 @@ labels = model.names
 # Define hazard weights
 HAZARD_SCORES = {
     "pothole": 0.25,
-    "construction": 0.35,
+    "pylon": 0.1,
+    "barrier": 0.3,
+    "barrel": 0.1,
     "log": 0.5,
     "debris": 0.2
 }
 
+#run the YOLO model on an image, return a safety score, and details of each object detected (bounding box coordinates, object name, and confidence in detection)
 def analyze_image(image_path, conf_thresh=0.4):
-    """
-    Runs YOLO on an image and returns a safety score
-    """
-    results = model(image_path, verbose=False, device='cpu')
-    detections = results[0].boxes
+    results = model(image_path, verbose=False, device='cpu') #run the model on the image, use CPU to load images rather than GPU because of limited hardware capabilities
+    detections = results[0].boxes #store the results of inference to extract data from
 
     hazard_score = 0.0
     bbox_coords = []
 
+    #go through all the objects detected in inference
     for i in range(len(detections)):
         conf = detections[i].conf.item()
+
+        #if the object detected has a confidence level below the threshold, skip it
         if conf < conf_thresh:
             continue
 
-        class_id = int(detections[i].cls.item())
-        classname = labels[class_id]
+        class_id = int(detections[i].cls.item()) #obtain the ID of the object detected
+        classname = labels[class_id] #obtain the label of the object detected
+
         # Ultralytics returns results in Tensor format, which have to be converted to a regular Python array
         xyxy_tensor = detections[i].xyxy.cpu() # Detections in tensor format in CPU memory
         xyxy = xyxy_tensor.numpy().squeeze() # Convert tensors to numpy array, squeezing out unnessary dimensions
@@ -43,6 +57,7 @@ def analyze_image(image_path, conf_thresh=0.4):
             "xyxy": [x1,y1,x2,y2]
         })
 
+        #sum up the objects detected to get a safety score
         hazard_score += HAZARD_SCORES.get(classname, 0.0)
 
     # Cap at 1.0

@@ -1,8 +1,17 @@
+# Course: COSC 3P71
+
+# Author 1
+# Name: Hansel Janzen
+# Sdt. no: 7954639
+
+# Author 2
+# Name: David Shamess
+# Sdt. no: 
+
 from flask import Flask, render_template, request, redirect, url_for
 from load_graph import load_graph
 from routing import shortest_distance, safest_route, combined_route
 import folium
-from graph_utils import safety_color
 from yolo_inference import analyze_image
 import json
 import os
@@ -11,33 +20,38 @@ from generate_map import generate_map
 from hazard_map import hazard_map
 import cv2
 
-
+#list of colors used to draw bounding boxes on the detected objects
 bbox_colors = [(164,120,87), (68,148,228), (93,97,209), (178,182,133), (88,159,106), 
               (96,202,231), (159,124,168), (169,162,241), (98,118,150), (172,176,184)]
 
 
-app = Flask(__name__)
+app = Flask(__name__) #create instance of flask server/app
 
-G = load_graph()
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
+app.config['UPLOAD_FOLDER'] = 'static/uploads' #define file upload location for new street images
+
+#main page of webapp
 @app.route("/", methods=["GET", "POST"])
 def home():
-    edges_list = list(G.edges)
+    G = load_graph() #load instance of the graph from JSON file ensures its updated)
+
+    edges_list = list(G.edges)  #list of edges to populate the jinja2 template
+    #init path variables to pass to jinja template, and create folium maps for routes
     shortest_path = None
     safest_path = None
     combined_path = None
+    #init lists to contain details of the edges for the calcualted routes, like edge image and safety score
     shortest_dtls = []
     safest_dtls = []
     combined_dtls = []
 
-    hazard_map()
-
+    #if the user clicks "compute route" = POST request, do the following
     if request.method == "POST":
+        #obtained from home.html to select start and end nodes for a route
         start = request.form.get("start")
         end = request.form.get("end")
 
-        # compute shortest path
+        # compute paths (shortest, safest and combined)
         shortest_path = shortest_distance(G, start, end)
         safest_path = safest_route(G, start, end)
         combined_path = combined_route(G, start, end)
@@ -53,6 +67,7 @@ def home():
         safest_dtls = route_edges(safest_path)
         combined_dtls = route_edges(combined_path)
 
+    #render home.html given the graph information (nodes, edges), calculated paths, and the details of the paths
     return render_template("home.html", 
                            nodes=list(G.nodes), 
                            edges_list=edges_list, 
@@ -64,7 +79,7 @@ def home():
                            combined_dtls=combined_dtls,)
 
 
-# Helper method to make changes to the NetworkX graph persistent after image uploading
+# Helper method to update the JSON file to reflect the networkX graph (make persistent changes)
 def save_graph_to_json(graph):
     output = {"nodes": [], "edges": []}
 
@@ -86,40 +101,42 @@ def save_graph_to_json(graph):
             "images": data.get("images", []),
         })
 
+    #overwrite graph.json with the new graph data
     with open("graph.json", "w") as f:
-        json.dump(output, f, indent=4)
+        json.dump(output, f, indent=4) 
 
 
 # Method to update the image with an edge, run inference on the image,
 # and update the safety score of an edge
 @app.route("/upload_evidence", methods=["POST"])
 def upload_evidence():
-    # 1. Get Form Data
+    G = load_graph()
+
+    # Get Form Data
     edge_str = request.form.get("edge_select")
     u, v = edge_str.split("|")  # Split the "Source|Target" string back into two nodes
 
     file = request.files.get("evidence")
     if file:
-        # 2. Save File
+        # save image file to /static/uploads
         filename = secure_filename(file.filename)
         save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file.save(save_path)
 
-        # 3. Run YOLO Inference
-        inf_results = analyze_image(save_path, 0.4) #CV2 Bounding boxes?
+        # run inference on uploaded image
+        inf_results = analyze_image(save_path, 0.4) #pass in path to the uploaded image, and confidence score threshold
 
-        is_hazard = inf_results["hazard_detected"]
-        risk_score = inf_results["score"]
-        bbox = inf_results["bbox"]
-        print(f"{risk_score}")
+        risk_score = inf_results["score"] #exctract the safety score from inference
+        bbox = inf_results["bbox"] #extract the bounding box coordinates of detected objects and other detection data from inference
 
-        # 4. Draw bounding boxes on the processed image
-        img = cv2.imread(save_path) 
+        # Draw bounding boxes on the processed image
+        img = cv2.imread(save_path) #convert the image to cv2 modifiable format
         if img is None:
             raise FileNotFoundError(f"cv2 could not read {save_path}")
         
+        #go through every object that was detected, and draw a box for it with a label and confidence score
         for box in bbox:
-            color = bbox_colors[box["labelid"] % 10]
+            color = bbox_colors[box["labelid"] % 10] #get the color of the bounding box to draw
             x1, y1, x2, y2 = box["xyxy"] #extract the xy coords of the object detected
 
             #draw the rectangle on the image
@@ -137,44 +154,48 @@ def upload_evidence():
         if not ok:
             raise RuntimeError(f"cv2.imwrite failed for: {save_path}")
             
-        # 5. Update the Graph (In-Memory)
-
-        # Initialize 'images' list if it doesn't exist for this edge
+        # update the in-memory (networkX) graph
+        # init 'images' list if it doesn't exist for this edge
         if "images" not in G[u][v]:
             G[u][v]["images"] = []
 
-        # Store image filename
+        # store image filename in edge attribute
         G[u][v]["images"] = [f"uploads/{filename}"]
 
-        # Update Safety Score based on YOLO            
+        # store safety score in edge attribute    
         G[u][v]["safety"] = risk_score
 
-        # 6. Persist Changes to JSON
+        # persist changes to JSON
         save_graph_to_json(G)
 
-        hazard_map() #update overall graph to reflect 
+    hazard_map() #update overall graph to have edge colors reflect new safety scores
 
     return redirect(url_for("home"))
 
 
-#Populate the HTML template with available edges to upload images to
+# create a list of details for each edge in the calculated routes
+#edge details include name of edge (name of road), image associated with the edge, and safety score for that edge
 def route_edges(path):
+    G = load_graph()
+
     edge_info = []
+
 
     for u, v in zip(path[:-1], path[1:]):
             edge_data = G.edges[u, v]
 
-            # Build data for the template
             imgs = edge_data.get("images", [])
+            #if the data stored in "images" is not a list, wrap it in one
             if not isinstance(imgs, list):
                 imgs = [imgs]
 
+            #add the edge details to the list
             edge_info.append({
                 "u": u,
                 "v": v,
                 "label": f"{u} → {v}",
                 "safety": edge_data.get("safety"),
-                "image_urls": [url_for("static", filename=p) for p in imgs],
+                "image_urls": [url_for("static", filename=p) for p in imgs], #give the url to the file that lives in the static folder for that edge (for home.html to load the image)
             })
 
     return edge_info

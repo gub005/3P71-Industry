@@ -66,9 +66,9 @@
             "source": "Cockburn & Beckwith",
             "target": "Cockburn & Drummond",
             "distance": 141.37,
-            "safety": 0.1,
+            "safety": 0.0,
             "images": [
-                "uploads/2964265693808609_-76.243438_44.890748.jpg"
+                "uploads/2970386106578810_-76.241072_44.889297.jpg"
             ]
         },
         {
@@ -77,7 +77,7 @@
             "distance": 142.89,
             "safety": 0.0,
             "images": [
-                "uploads/2969246000007489_-76.239769_44.897878.jpg"
+                "uploads/augmented_2934959920066689_-76.240488_44.897384.png"
             ]
         },
         {
@@ -111,9 +111,9 @@
             "source": "Gore & Brock",
             "target": "Gore & Craig",
             "distance": 142.43,
-            "safety": 1.0,
+            "safety": 0.5,
             "images": [
-                "uploads/potholes_augmented_toronto_140298098081724_-79.372450_43.658308.png"
+                "uploads/augmented_2940054269651913_-76.240128_44.893481.png"
             ]
         },
         {
@@ -138,16 +138,18 @@
             "source": "Drummond & Brock",
             "target": "Beckwith & Brock",
             "distance": 143.41,
-            "safety": 0.1,
-            "images": []
+            "safety": 0.4,
+            "images": [
+                "uploads/augmented_2949404328668289_-76.244398_44.889943.png"
+            ]
         },
         {
             "source": "Beckwith & Brock",
             "target": "Beckwith & Craig",
             "distance": 141.42,
-            "safety": 0.1,
+            "safety": 0.4,
             "images": [
-                "uploads/debris_augmented_toronto_142270181201612_-79.395103_43.645446.png"
+                "uploads/augmented_2949404328668289_-76.244398_44.889943.png"
             ]
         },
         {
@@ -161,8 +163,10 @@
             "source": "Beckwith & Craig",
             "target": "Drummond & Craig",
             "distance": 142.12,
-            "safety": 0.1,
-            "images": []
+            "safety": 0.4,
+            "images": [
+                "uploads/augmented_2949404328668289_-76.244398_44.889943.png"
+            ]
         },
         {
             "source": "Drummond & Craig",

@@ -1,12 +1,20 @@
+# Course: COSC 3P71
+
+# Author 1
+# Name: Hansel Janzen
+# Sdt. no: 7954639
+
+# Author 2
+# Name: David Shamess
+# Sdt. no: 
+
 import folium
 from load_graph import load_graph
-from graph_utils import safety_color
-
-G = load_graph()
 
 #generate a map for a certain type of path
 #path is a sequence of edges, type is an integer representing safest, shortest, or combined path
 def generate_map(path, type):
+        G = load_graph() #load the most recent version of the graph for updated safety scores
         lat, lon = G.nodes[path[0]]["lat"], G.nodes[path[0]]["lon"]
         m = folium.Map(location=[lat, lon], zoom_start=16)
 
@@ -42,3 +50,12 @@ def generate_map(path, type):
             m.save("static/safestroute_map.html")
         elif type == 2: 
             m.save("static/combinedroute_map.html")
+
+#calculate color of an edge based on its safety score
+def safety_color(p):
+    if p < 0.3:
+        return "green"
+    elif p < 0.7:
+        return "orange"
+    else:
+        return "red"
