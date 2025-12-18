@@ -6,7 +6,7 @@
 
 # Author 2
 # Name: David Shamess
-# Sdt. no: 
+# Sdt. no: 6548366
 
 from ultralytics import YOLO
 

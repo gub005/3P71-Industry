@@ -1,3 +1,9 @@
+# Course: COSC 3P71
+
+# Author 1
+# Name: Alexandere Brillon
+# Sdt. no: 7965171
+
 import networkx as nx
 
 def shortest_distance(G, start, end):

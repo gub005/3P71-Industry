@@ -2,11 +2,7 @@
 
 # Author 1
 # Name: Alexandere Brillon
-# Sdt. no: 
-
-# Author 2
-# Name:
-# Sdt. no:
+# Sdt. no: 7965171
 
 import json
 import math
