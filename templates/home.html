@@ -455,6 +455,9 @@
      <h2>Map of Current Road Hazard Status</h2>
 
         <iframe src="{{ url_for('static', filename='hazard_map.html') }}"></iframe>
+        <p>Green = Safety Level lower than 0.3</p>
+        <p>Orange = Safety Level [0.3, 0.7]</p>
+        <p>Red = Safety Level greater than 0.7</p>
   </div>
 
   <script>
