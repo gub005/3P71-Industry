@@ -1,8 +1,13 @@
+# Course: COSC 3P71
+
+# Author 1
+# Name: Hansel Janzen
+# Sdt. no: 7954639
+
 # Finds all images Mapillary knows about at that location
 # Works even when /images?closeto= returns 0
 # saves coordinates with 6-decimal precision
 # Stores everything in a folder + optional metadata CSV
-#
 
 import requests
 from pathlib import Path
