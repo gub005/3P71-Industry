@@ -4,12 +4,17 @@ Some of the contents of this project were a part of the assignment submission an
 
 Table of Contents
 1 - Project Overview
+
 2 - Tech Stack
+
 3 - Locations of Project Files/Components
+
 4 - Instructions on How to Run the Project
+
     4.1 - Web App Functions/Features
 
 [1 - Project Overview]
+
 This system addresses road safety by integrating real time computer vision (YOLO) with graph based navigation to not just find the route with the shortest distance from point a to point b, but also the safest.
 
 The computer vision model runs inference on an image of a road, evaluating for hazards within a set list. A graph representing the area the computer vision model would monitor for hazards has attributes like safety and image associated with each edge/road. Based on the hazards detected from inference, a safety score for the associated edge is calculated, stored and used for future routing.
