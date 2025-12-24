@@ -2,11 +2,9 @@
 
 # Author 1
 # Name: Hansel Janzen
-# Sdt. no: 7954639
 
 # Author 2
 # Name: David Shamess
-# Sdt. no: 6548366
 
 from ultralytics import YOLO
 

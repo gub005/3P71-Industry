@@ -2,7 +2,6 @@
 
 # Author 1
 # Name: Alexandere Brillon
-# Sdt. no: 7965171
 
 import networkx as nx
 

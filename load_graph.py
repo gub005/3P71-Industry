@@ -2,7 +2,6 @@
 
 # Author 1
 # Name: David Shamess
-# Sdt. no: 6548366
 
 import json
 from networkx.readwrite import json_graph
