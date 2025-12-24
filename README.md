@@ -2,7 +2,8 @@
 Some of the contents of this project were a part of the assignment submission and not uploaded to GitHub. If you would like any of the mentioned files for whatever reason (e.g. training artifacts, model weights), reach out to hanseljzn@gmail.com
 ****
 
-Table of Contents
+[Table of Contents]
+
 1 - Project Overview
 
 2 - Tech Stack
