@@ -2,7 +2,9 @@
 
 # Author 1
 # Name: Hansel Janzen
-# Sdt. no: 7954639
+
+# Author 2
+# Name: Ethan DeSantis
 
 # Finds all images Mapillary knows about at that location
 # Works even when /images?closeto= returns 0
